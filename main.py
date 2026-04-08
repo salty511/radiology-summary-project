@@ -11,7 +11,7 @@ if __name__ == '__main__':
 
     df = pd.read_csv(f'data/{datafile}.csv', sep='$')
 
-    model_name = "google-t5/t5-small"
+    model_name = "google/flan-t5-small"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     
     dataset = load_dataset_from_df(df)
@@ -30,5 +30,5 @@ if __name__ == '__main__':
     trainer.train()
 
     trainer.save_model(f"models/{model_name.split("/")[1]}-finetuned/{datafile}")
-
+    
     test_model(f"models/{model_name.split("/")[1]}-finetuned/{datafile}", dataset)

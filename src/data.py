@@ -51,9 +51,6 @@ def get_row_clean(abstract: list[dict], redactedInfo=True, trailingFullStop=True
 
 def run_data_pipeline(file: str):
     files = os.listdir('data/ecgen-radiology')
-    print(files[:10])
-
-    file = "processed_data_clean"
 
     with open(f"data/{file}.csv", 'w') as fp:
         fp.write('IMPRESSION$FINDINGS\n')
