@@ -56,10 +56,16 @@ Interestingly, we get a large gain from removing the redacted information, but s
 
 ## Usage
 
+### Data
+
+The data can be found at `https://openi.nlm.nih.gov/imgs/collections/NLMCXR_reports.tgz`
+
+Extract the `ecgen-radiology` folder to `data/` in the root directory
+
 ### Install Requirements
 
 ```python
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
@@ -81,10 +87,16 @@ fastapi dev
 
 ## API Docs
 
-Access the impressions endpoint via http://127.0.0.1:8000/impression. See an example curl command below.
+Access the impressions endpoint via http://127.0.0.1:8000/impression. See an example curl command below. The API is also deployed at https://radiology-summary-project.onrender.com/
 
 ```bash
 curl -X POST "http://localhost:8000/impression/" \
+  -H "Content-Type: application/json" \
+  -d '{"findingsText":"No acute cardiopulmonary process. Lungs are clear. Heart size normal."}'
+```
+
+```bash
+curl -X POST "https://radiology-summary-project.onrender.com/impression/" \
   -H "Content-Type: application/json" \
   -d '{"findingsText":"No acute cardiopulmonary process. Lungs are clear. Heart size normal."}'
 ```

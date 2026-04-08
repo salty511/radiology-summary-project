@@ -12,7 +12,7 @@ class impressionBody(BaseModel):
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "API up and running"}
 
 @app.post("/impression/")
 async def get_impression(requestBody: impressionBody):
