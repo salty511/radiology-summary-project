@@ -3,3 +3,6 @@
 data
 qwen3-finetuned
 checkpoints
+
+# notebooks
+data-exploration.ipynb
