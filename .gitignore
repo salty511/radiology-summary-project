@@ -6,3 +6,5 @@ checkpoints
 
 # notebooks
 data-exploration.ipynb
+
+__pycache__

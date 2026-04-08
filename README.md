@@ -4,16 +4,91 @@ This Repo contains an end to end modelling pipeline for fine-tuning the t5-small
 
 ## Model Summary
 
-I chose to use the t5-small model as it's designed for sequence to sequence tasks including summarisation. The small model is good enough to achieve the minimum rouge-1 score of 0.3 and small enough to be trainable on consumer hardware. I chose to use the HuggingFace Transformers framework for finetuning, utilising the Seq2SeqTrainer class.
+I initially explored the T5 family of models. These are encoder-decoder models designed for sequence to sequence tasks including text summarisation. There are also more modern versions of the original T5 models called flan-t5 which perform better on almost all tasks, and as I've seen on this task as well. I also tried using a quantised version of a larger model flan-t5-large (0.8B parameters), using LoRA for fine-tuning although I got worse results. For this task I chose to stick with the smaller models for both training and inference speed on consumer hardware. In future I would like to try some of these larger models with a cloud computing solution with more powerful hardware. See table below for a comparison of the performance for the various models I tried. Ultimately I went with the flan-t5-small model as it's good enough to achieve the minimum rouge-1 score of 0.3 and small enough to be trainable on my local machine. I chose to use the HuggingFace Transformers framework for finetuning, utilising the Seq2SeqTrainer class.
 
-## Dataset and Preprocessing
+| Model                           | Eval Rouge-1 | Test Rouge-1 |
+| ------------------------------- | ------------ | ------------ |
+| t5-small                        | 0.4941       | 0.3892       |
+| flan-t5-small                   | 0.5928       | 0.6213       |
+| flan-t5-large (8-bit Quantised) | 0.5021       | 0.4012       |
 
-The dataset consists of many xml files, containing an `<Abstract>` section, with `<AbstractText>` subsections. The sections of interest to us are the ones labelled `#FINDINGS` and `#IMPRESSIONS`. These are the scan findings and corresponding summaries respectively. There are files which don't contian either one or both sections so these are excluded from modelling.
+### Training Parameters
 
-### Redacted Information
+I mainly stuck with deafult training parameters, although in future would like to explore some hyperparameter tuning. I did experiment with number of training epochs and landed on 5 as the point where eval rouge-1 starts to converge.
 
-The dataset contains some redacted personal information, appearing as strings of Xs in the text, i.e. "Comparison XXXX, XXXX. Well-expanded and clear lungs. Mediastinal contour within normal limits. No acute cardiopulmonary abnormality identified." is an example of an impression containing this feature. I chose to try modelling both with and without these records, and ultimately achieved better results with simply removing these records from the dataset.
+## Dataset and Preprocessing/Cleaning
 
-## Model Performance
+The dataset consists of many xml files, containing an `<Abstract>` section, with `<AbstractText>` subsections. The sections of interest to us are the ones labelled `#FINDINGS` and `#IMPRESSIONS`. These are the scan findings and corresponding summaries respectively. There are files which do not contian either one or both sections so these are excluded from modelling.
 
-I achieved a rouge-1 score of 0.49 on the validation dataset and 0.38 on the test dataset.
+### 1. Redacted Information
+
+The dataset contains some redacted personal information, appearing as strings of Xs in the text, see an example of an impression containing this feature below. I chose to try modelling both with and without these records, and ultimately achieved better results with simply removing these records from the dataset.
+
+    Comparison XXXX, XXXX. Well-expanded and clear lungs. Mediastinal contour within normal limits. No acute cardiopulmonary abnormality identified.
+
+### 2. Impression Formatting
+
+The impressions in the dataset consist of two distinct formats, either a simple sentenct (or string of sentences) or a numbered list of sentences. See examples below.
+
+    1. Focal opacity in the right midlung zone worrisome for pneumonitis. 2. Mild pulmonary vascular congestion.
+    No acute cardiopulmonary findings
+
+I chose to standardise all records to the simple sentences format.
+
+### 3. Other Artefacts
+
+There are also some other small artefacts in the dataset, for example some records contain trailing full stops at the end of sentences, see an example below
+
+    Surgical changes of the right hemithorax and mild cardiomegaly without acute cardiopulmonary abnormality identified. .
+
+There's also inconsistencies in whether sentences end with a full stop or not, some records are just the text of the sentence with no full stop. I chose to standardise these and remove the trailing fullstops as seen above. See table below for a comparison of rouge score on the flan-t5-small model after each step of data cleaning.
+
+| Dataset      | Eval Rouge-1 | Test Rouge-1 |
+| ------------ | ------------ | ------------ |
+| All Raw Data | 0.4265       | 0.3680       |
+| Step 1       | 0.5921       | 0.5491       |
+| Step 2       | 0.6185       | 0.5472       |
+| Step 3       | 0.5928       | 0.6213       |
+
+Interestingly, we get a large gain from removing the redacted information, but subsequent steps seem to make the model slightly worse. Ultimately they are all quite close though and I think the difference is largely just due to random variation.
+
+## Usage
+
+### Install Requirements
+
+```python
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### Run Training Pipeline
+
+```bash
+python main.py
+```
+
+This script runs the data preprocessing and cleaning and trains the model, then calculates the rouge score on the test dataset. The model is output to `models/flan-t5-small-finetuned/processed_data_clean/`
+
+### Run the API
+
+```bash
+cd api
+fastapi dev
+```
+
+## API Docs
+
+Access the impressions endpoint via http://127.0.0.1:8000/impression. See an example curl command below.
+
+```bash
+curl -X POST "http://localhost:8000/impression/" \
+  -H "Content-Type: application/json" \
+  -d '{"findingsText":"No acute cardiopulmonary process. Lungs are clear. Heart size normal."}'
+```
+
+## Limitations and Future Improvements
+
+For this project I chose to keep it simple by limiting myself to training on my local machine. This comes with limitations on the size of model I can use and as I've shown using a quantised version of a larger model was unrealistic for training time and did not yield better results. I think this was due to the implementation of training with LoRA on a quantised model and would need to investigate this futher. Ultimately I would like to use a cloud computing service to try larger models on better hardware in future.
+
+Another anvenue I could explore is hyperparameter tuning, for simplicity I stuck with mostly default settings for training paramets and only tweaked the epoch number.
