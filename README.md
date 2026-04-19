@@ -1,6 +1,10 @@
 # Radiology Text Summarisation Model Project
 
-This Repo contains an end to end modelling pipeline for fine-tuning the t5-small model on a dataset of Radiology scan findings, and corresponding summaries (impressions)
+This Repo contains an end to end modelling pipeline for fine-tuning the t5-small model on a dataset of Radiology scan findings, and corresponding summaries (impressions). See the live demo for a basic web intereface for interacting with the final model.
+
+<a href="https://radiology-summary-project.onrender.com/" target="_blank">
+    <img src="https://img.shields.io/badge/Live%20Demo-Render-blue?style=flat-square&logo=netlify&logoSize=auto" alt="Live Demo Badge" class="border-none">
+</a>
 
 ## Model Summary
 
@@ -89,7 +93,7 @@ Open `http://127.0.0.1:8000/` to use the web form, or `http://127.0.0.1:8000/hea
 
 ## API Docs
 
-Access the impressions endpoint via http://127.0.0.1:8000/impression. See an example curl command below. The API is also deployed at https://radiology-summary-project.onrender.com/
+Access the impressions endpoint via http://127.0.0.1:8000/impression. See an example curl command below. The API is also deployed at https://radiology-summary-project.onrender.com/.
 
 ```bash
 curl -X POST "http://localhost:8000/impression/" \
