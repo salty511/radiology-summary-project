@@ -26,6 +26,8 @@ I mainly stuck with deafult training parameters, although in future would like t
 
 The dataset consists of many xml files, containing an `<Abstract>` section, with `<AbstractText>` subsections. The sections of interest to us are the ones labelled `#FINDINGS` and `#IMPRESSIONS`. These are the scan findings and corresponding summaries respectively. There are files which do not contian either one or both sections so these are excluded from modelling.
 
+There are 3999 total datafiles in the dataset. After cleaning, these are processed into 1809 total findings, impression pairs for finetuning.
+
 ### 1. Redacted Information
 
 The dataset contains some redacted personal information, appearing as strings of Xs in the text, see an example of an impression containing this feature below. I chose to try modelling both with and without these records, and ultimately achieved better results with simply removing these records from the dataset.
@@ -47,7 +49,9 @@ There are also some other small artefacts in the dataset, for example some recor
 
     Surgical changes of the right hemithorax and mild cardiomegaly without acute cardiopulmonary abnormality identified. .
 
-There's also inconsistencies in whether sentences end with a full stop or not, some records are just the text of the sentence with no full stop. I chose to standardise these and remove the trailing fullstops as seen above. See table below for a comparison of rouge score on the flan-t5-small model after each step of data cleaning.
+There's also inconsistencies in whether sentences end with a full stop or not, some records are just the text of the sentence with no full stop. I chose to standardise these and remove the trailing fullstops as seen above.
+
+See table below for a comparison of rouge score on the flan-t5-small model after each step of data cleaning.
 
 | Dataset      | Eval Rouge-1 | Test Rouge-1 |
 | ------------ | ------------ | ------------ |
