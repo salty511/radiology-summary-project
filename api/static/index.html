@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Radiology Text Summarisation Model Demo</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Radiology Text Summarisation Model Demo</h1>
+      <p>Enter the findings text below</p>
+
+      <form id="impression-form">
+        <label for="findings">Findings</label>
+        <textarea
+          id="findings"
+          maxlength="256"
+          placeholder="No acute cardiopulmonary process. Lungs are clear. Heart size normal."
+          required
+        ></textarea>
+
+        <div class="meta">
+          <span id="status">Ready</span>
+          <span><span id="char-count">0</span>/256</span>
+        </div>
+
+        <button id="submit-btn" type="submit">Generate impression</button>
+      </form>
+
+      <div id="result" class="result" hidden></div>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

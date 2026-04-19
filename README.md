@@ -85,6 +85,8 @@ cd api
 fastapi dev
 ```
 
+Open `http://127.0.0.1:8000/` to use the web form, or `http://127.0.0.1:8000/health` for the health check endpoint.
+
 ## API Docs
 
 Access the impressions endpoint via http://127.0.0.1:8000/impression. See an example curl command below. The API is also deployed at https://radiology-summary-project.onrender.com/
