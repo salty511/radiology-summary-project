@@ -20,7 +20,7 @@ form.addEventListener("submit", async (event) => {
   resultBox.classList.remove("error");
 
   try {
-    const impressionURL = "http://127.0.0.1:10000/impression/"
+    const impressionURL = "/impression/"
     console.log(impressionURL)
     const response = await fetch(impressionURL, {
       method: "POST",
