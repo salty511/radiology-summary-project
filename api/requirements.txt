@@ -5,3 +5,4 @@ transformers==4.51.3
 torch==2.3.1+cpu
 safetensors==0.4.5
 sentencepiece==0.2.0
+protobuf
