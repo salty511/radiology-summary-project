@@ -5,6 +5,8 @@ const resultBox = document.getElementById("result");
 const statusText = document.getElementById("status");
 const charCount = document.getElementById("char-count");
 
+console.log("JS LOADED")
+
 findingsInput.addEventListener("input", () => {
   charCount.textContent = findingsInput.value.length;
 });
