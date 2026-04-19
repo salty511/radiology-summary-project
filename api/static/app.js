@@ -20,16 +20,18 @@ form.addEventListener("submit", async (event) => {
   resultBox.classList.remove("error");
 
   try {
-    const response = await fetch("/impression/", {
+    const impressionURL = "http://127.0.0.1:10000/impression/"
+    console.log(impressionURL)
+    const response = await fetch(impressionURL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ findingsText })
     });
-
+    console.log(response.status)
     const data = await response.json();
-
+  
     if (!response.ok || !data.impression) {
       throw new Error(data.detail || data.exception || "Request failed");
     }
