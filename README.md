@@ -2,8 +2,8 @@
 
 This Repo contains an end to end modelling pipeline for fine-tuning the t5-small model on a dataset of Radiology scan findings, and corresponding summaries (impressions). See the live demo for a basic web intereface for interacting with the final model.
 
-<a href="https://radiology-summary-project.onrender.com/" target="_blank">
-    <img src="https://img.shields.io/badge/Live%20Demo-Render-blue?style=flat-square&logo=netlify&logoSize=auto" alt="Live Demo Badge" class="border-none">
+<a href="https://radiology-summary-project-production.up.railway.app/" target="_blank">
+    <img src="https://img.shields.io/badge/Live%20Demo-Railway-red?style=flat-square&logo=railway&logoSize=auto" alt="Live Demo Badge" class="border-none">
 </a>
 
 ## Model Summary
