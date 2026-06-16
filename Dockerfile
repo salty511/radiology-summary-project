@@ -14,11 +14,6 @@ RUN pip install --no-cache-dir --upgrade pip \
 
 COPY . .
 
-RUN model_file="models/flan-t5-small-finetuned/processed_data_clean/model.safetensors" \
-    && test -f "$model_file" \
-    && test "$(wc -c < "$model_file")" -gt 1000000 \
-    || (echo "Missing real model file. Ensure Git LFS files are available during the Railway build." && exit 1)
-
 EXPOSE 8000
 
 CMD ["sh", "-c", "python -m uvicorn api.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

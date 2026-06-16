@@ -97,9 +97,15 @@ Open `http://127.0.0.1:8000/` to use the web form, or `http://127.0.0.1:8000/hea
 
 ### Deploy on Railway with Docker
 
-Railway will detect the `Dockerfile` at the repo root. The container runs `api.main:app` from `/app`, binds to Railway's `$PORT`, and includes the local model files under `models/`.
+Railway will detect the `Dockerfile` at the repo root. The container runs `api.main:app` from `/app` and binds to Railway's `$PORT`.
 
-Because `model.safetensors` is tracked with Git LFS, make sure Railway has access to the real LFS file during build. If Railway only receives the small LFS pointer file, the Docker build fails with a clear model-file error instead of deploying a broken API.
+Because `model.safetensors` is tracked with Git LFS, the deployed app expects the real weights file from a Railway volume by default:
+
+```text
+/models/flan-t5-small-finetuned/processed_data_clean/model.safetensors
+```
+
+The smaller config and tokenizer files are still read from the repo. If the volume is mounted somewhere else, set `MODEL_DIR` to the mounted `processed_data_clean` directory. Local development still works with the repo-local `models/` directory when the real weights file is present.
 
 ## API Docs
 
