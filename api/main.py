@@ -20,7 +20,7 @@ prefix = "summarize: "
 
 
 def _is_real_model_file(path: Path) -> bool:
-    return path.is_file() and path.stat().st_size > 1_000_000
+    return path.is_file()
 
 
 def resolve_model_path() -> Path:
