@@ -1,8 +1,8 @@
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 from rouge import Rouge
-from datasets import Dataset
+from datasets import DatasetDict
 
-def test_model(model_path: str, dataset: Dataset):
+def test_model(model_path: str, dataset: DatasetDict):
     """Generates impressions for all findings in test dataset and calculates rouge score"""
     model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
     tokenizer = AutoTokenizer.from_pretrained(model_path)

@@ -1,8 +1,6 @@
 import pandas as pd
-from datasets import Dataset
-import datasets
+from datasets import Dataset, DatasetDict
 import transformers
-from transformers import AutoTokenizer
 from evaluate import load
 from transformers import AutoModelForSeq2SeqLM, DataCollatorForSeq2Seq, Seq2SeqTrainingArguments, Seq2SeqTrainer, BitsAndBytesConfig
 import nltk
@@ -21,9 +19,8 @@ def load_dataset_from_df(df: pd.DataFrame):
 
     return dataset
 
-def batch_process_tokenize_function(batch: datasets.formatting.formatting.LazyBatch, tokenizer: transformers.models.t5.tokenization_t5.T5Tokenizer):
+def batch_process_tokenize_function(batch: dict, tokenizer: transformers.models.t5.tokenization_t5.T5Tokenizer):
     """Returns HuggingFace Datasets batch dictionary after processing and tokenization"""
-    print(tokenizer)
     prefix = "summarize: " # T5 models require "summarize: " prefix
     inputs = [prefix + x for x in batch["FINDINGS"]]
     processed_batch = tokenizer(inputs, max_length=512, truncation=True)
@@ -33,7 +30,7 @@ def batch_process_tokenize_function(batch: datasets.formatting.formatting.LazyBa
     
     return processed_batch
 
-def tokenize_dataset(dataset: Dataset, tokenizer: transformers.models.t5.tokenization_t5.T5Tokenizer):
+def tokenize_dataset(dataset: DatasetDict, tokenizer: transformers.models.t5.tokenization_t5.T5Tokenizer):
     """Returns Dataset object after tokenization and preprocessing, applies batch_process_tokenize_function to each batch via Dataset.map"""
 
     tokenized_dataset = dataset.map(batch_process_tokenize_function, batched=True, load_from_cache_file=False, fn_kwargs={"tokenizer": tokenizer})
@@ -57,15 +54,18 @@ def build_compute_metrics(tokenizer):
         # Note that other metrics may not have a `use_aggregator` parameter
         # and thus will return a list, computing a metric for each sentence.
         result = metric.compute(predictions=decoded_preds, references=decoded_labels, use_stemmer=True, use_aggregator=True)
+
+        if result is not None:
+            # Add mean generated length
+            prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id) for pred in predictions]
+            result["gen_len"] = np.mean(prediction_lens)
         
-        # Add mean generated length
-        prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id) for pred in predictions]
-        result["gen_len"] = np.mean(prediction_lens)
-        
-        return {k: round(v, 4) for k, v in result.items()}
+            return {k: round(v, 4) for k, v in result.items()}
+        else:
+            return {}
     return compute_metrics
 
-def load_trainer(tokenizer: transformers.models.t5.tokenization_t5.T5Tokenizer, model_name: str, tokenized_dataset: Dataset, datafile, quantize=False):
+def load_trainer(tokenizer: transformers.models.t5.tokenization_t5.T5Tokenizer, model_name: str, tokenized_dataset: DatasetDict, datafile, quantize=False):
     """Loads Model, DataCollater and Trainer with configuration and args, includes quantisation option for larger models"""
 
     batch_size = 16
@@ -117,7 +117,7 @@ def load_trainer(tokenizer: transformers.models.t5.tokenization_t5.T5Tokenizer, 
         model,
         args,
         train_dataset=tokenized_dataset["train"],
-        eval_dataset=tokenized_dataset["validation"],
+        eval_dataset=tokenized_dataset["validation"],  # type: ignore
         data_collator=data_collator
     )
 

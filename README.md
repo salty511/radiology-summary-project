@@ -95,6 +95,12 @@ fastapi dev
 
 Open `http://127.0.0.1:8000/` to use the web form, or `http://127.0.0.1:8000/health` for the health check endpoint.
 
+### Deploy on Railway with Docker
+
+Railway will detect the `Dockerfile` at the repo root. The container runs `api.main:app` from `/app`, binds to Railway's `$PORT`, and includes the local model files under `models/`.
+
+Because `model.safetensors` is tracked with Git LFS, make sure Railway has access to the real LFS file during build. If Railway only receives the small LFS pointer file, the Docker build fails with a clear model-file error instead of deploying a broken API.
+
 ## API Docs
 
 Access the impressions endpoint via http://127.0.0.1:8000/impression. See an example curl command below. The API is also deployed at https://radiology-summary-project.onrender.com/.
