@@ -26,6 +26,7 @@ def _is_real_model_file(path: Path) -> bool:
 def resolve_model_path() -> Path:
     volume_model_file = volume_model_dir / "model.safetensors"
     repo_model_file = repo_model_dir / "model.safetensors"
+    print(volume_model_file)
 
     if _is_real_model_file(volume_model_file):
         runtime_model_dir = Path("/tmp/radiology-model")
@@ -48,6 +49,7 @@ def resolve_model_path() -> Path:
         "Model weights not found. Mount the Railway volume at /models with "
         "flan-t5-small-finetuned/processed_data_clean/model.safetensors, "
         "or set MODEL_DIR to the mounted model directory."
+        f"{repo_model_dir}"
     )
 
 
