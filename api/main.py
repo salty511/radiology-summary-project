@@ -49,7 +49,7 @@ def resolve_model_path() -> Path:
         "Model weights not found. Mount the Railway volume at /models with "
         "flan-t5-small-finetuned/processed_data_clean/model.safetensors, "
         "or set MODEL_DIR to the mounted model directory."
-        f"{os.listdir("/app")}"
+        f"{os.listdir("/app/volume")}"
     )
 
 
